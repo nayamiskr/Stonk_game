@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "928151065411",
+    "project_id": "loginflutter-58634",
+    "storage_bucket": "loginflutter-58634.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928151065411:android:021c0a0ae87485681fd5f6",
+        "android_client_info": {
+          "package_name": "com.example.stonk_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGtLrDJs8Oz3ycxU0b2294_IzeKvw4qgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
