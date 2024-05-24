@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _funds = 100;
   DateTime startDate = DateTime(2023, 1, 1);
-  DateTime endDate = DateTime(2023, 1, 7);
+  DateTime endDate = DateTime(2023, 12, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -128,8 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 50),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => OrderPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          OrderPage(startDate: startDate, endDate: endDate)));
             },
             style: ElevatedButton.styleFrom(
                 padding:

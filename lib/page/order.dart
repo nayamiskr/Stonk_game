@@ -6,7 +6,9 @@ import 'package:stonk_app/features/gethttp.dart';
 import 'HomePage.dart';
 
 class OrderPage extends StatefulWidget {
-  const OrderPage({super.key});
+  final DateTime startDate;
+  final DateTime endDate;
+  const OrderPage({super.key, required this.startDate, required this.endDate});
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -39,7 +41,8 @@ class _OrderPageState extends State<OrderPage> {
               const SizedBox(height: 20),
               GestureDetector(
                   onTap: () async {
-                    final url = await getImage(stockCODE.text);
+                    final url = await getImage(
+                        stockCODE.text, widget.startDate, widget.endDate);
                     setState(() {
                       imageUrl = url;
                     });

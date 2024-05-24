@@ -41,7 +41,10 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const OrderPage()),
+                          builder: (context) => OrderPage(
+                                startDate: DateTime(0),
+                                endDate: DateTime(0),
+                              )),
                     );
                   },
                 ),
