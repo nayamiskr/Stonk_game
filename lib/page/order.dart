@@ -3,6 +3,8 @@ import 'package:stonk_app/components/button.dart';
 import 'package:stonk_app/components/textinput.dart';
 import 'package:stonk_app/features/gethttp.dart';
 
+import 'HomePage.dart';
+
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
 
@@ -73,7 +75,13 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                         btnHeight: 30,
                         btnWidth: 100,
-                        pressAction: () {}),
+                        pressAction: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Account()),
+                          );
+                        }),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(40),
@@ -85,7 +93,13 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                         btnHeight: 30,
                         btnWidth: 100,
-                        pressAction: () {}),
+                        pressAction: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Account()),
+                          );
+                        }),
                   )
                 ],
               )
