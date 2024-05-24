@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(199, 255, 255, 255),
+      backgroundColor: Color.fromARGB(235, 2, 199, 254),
       body: Column(
         children: [
           const SizedBox(height: 40),
