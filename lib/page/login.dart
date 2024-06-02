@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stonk_app/components/textinput.dart';
 import 'package:stonk_app/page/HomePage.dart';
-import 'package:stonk_app/page/register.dart';
 
 class LoginPage extends StatelessWidget {
   final userController = TextEditingController();
@@ -9,13 +8,26 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({super.key});
 
+  final String account = "hello";
+  final String password = "123123";
+
+  void login(BuildContext context) {
+    if (userController.text == account && passwordController.text == password) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Wrong Account or Password")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(235, 2, 199, 254),
+      backgroundColor: const Color.fromARGB(235, 2, 199, 254),
       body: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 200),
           //icon
           const Icon(
             Icons.account_circle,
@@ -45,8 +57,7 @@ class LoginPage extends StatelessWidget {
             children: [
               GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomePage()));
+                    login(context);
                   },
                   child: Container(
                       padding: const EdgeInsets.all(20),
@@ -63,12 +74,7 @@ class LoginPage extends StatelessWidget {
                             fontSize: 20),
                       )))),
               GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const RegisterPage()));
-                },
+                onTap: () {},
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.symmetric(horizontal: 30),

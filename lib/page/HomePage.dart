@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => OrderPage(
                                 startDate: DateTime(0),
-                                endDate: DateTime(0),
+                                buyPrice: 200,
                               )),
                     );
                   },
@@ -66,7 +66,10 @@ class HomePage extends StatelessWidget {
                     // 導航到帳務頁面
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Account()),
+                      MaterialPageRoute(
+                          builder: (context) => const Account(
+                                paragraphs: [],
+                              )),
                     );
                   },
                 ),
@@ -133,7 +136,8 @@ class Entrust extends StatelessWidget {
 }
 
 class Account extends StatelessWidget {
-  const Account({super.key});
+  final List<String> paragraphs;
+  const Account({super.key, required this.paragraphs});
 
   @override
   Widget build(BuildContext context) {
@@ -141,84 +145,30 @@ class Account extends StatelessWidget {
       appBar: AppBar(
         title: const Text('帳務'),
       ),
-      body: const Padding(
-        padding: EdgeInsets.only(top: 30),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 30),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // 可用資金
-            Align(
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Text(
-                    '    可用資金             ',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Text(
-                    '總報酬',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ),
-            // 總報酬
-            Align(
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Text(
-                    '    損益             ',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Text(
-                    '    未實現存益',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Text(
-                    '    以實損益             ',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Text(
-                    '庫存報',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ),
-            Align(
-                alignment: Alignment.center,
-                child: Row(children: [
-                  Text(
-                    '',
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ])),
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    children: [
-                      Text(
-                        '    名稱     市/均      股數      損益',
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Spacer(),
-                    ],
+                Text('賠率: ', style: TextStyle(fontSize: 32)),
+                Text(
+                  paragraphs[0],
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: paragraphs[0].startsWith('-')
+                        ? Colors.red
+                        : Colors.green,
                   ),
                 ),
               ],
             ),
+            Text(
+              '資金: ${paragraphs[1]}',
+              style: TextStyle(fontSize: 32),
+            )
           ],
         ),
       ),

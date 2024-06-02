@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:stonk_app/components/button.dart';
 import 'package:stonk_app/page/order.dart';
 
+import '../components/textinput.dart';
+import '../features/gethttp.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
 
@@ -10,9 +13,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double _funds = 100;
   DateTime startDate = DateTime(2023, 1, 1);
-  DateTime endDate = DateTime(2023, 12, 1);
+  final buyPrice = TextEditingController();
+  final stockCODE = TextEditingController();
+  String imageUrl = ' ';
 
   @override
   Widget build(BuildContext context) {
@@ -20,35 +24,26 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           const SizedBox(
-            height: 70,
+            height: 30,
           ),
-          Text(
-            'Capital: ${_funds}W',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-          ),
-
-          const SizedBox(height: 5),
-
-          // 資金條設定
-          Slider(
-            value: _funds,
-            max: 1000,
-            min: 0,
-            divisions: 2000,
-            label: '${_funds}W',
-            onChanged: (double value) {
-              setState(() {
-                _funds = value;
-              });
-            },
-          ),
-
-          const SizedBox(height: 30),
 
           //display the time
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.wallet,
+                    size: 50,
+                  ),
+                  Text(': 1000000NTD', style: TextStyle(fontSize: 40))
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               Center(
                 child: Text(
                   'Start Date: ${startDate.year}年 ${startDate.month}月 ${startDate.day}日',
@@ -56,23 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold, fontSize: 25),
                 ),
               ),
-              const SizedBox(width: 25),
-              Center(
-                child: Text(
-                  'End Date: ${endDate.year}年 ${endDate.month}月 ${endDate.day}日',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 25),
-                ),
-              )
-            ],
-          ),
-
-          const SizedBox(height: 25),
-
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //select start date button
+              const SizedBox(
+                height: 10,
+              ),
               CustButton(
                 btnText: const Text(
                   'Select Start Date',
@@ -86,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     context: context,
                     initialDate: startDate,
                     firstDate: DateTime(2000),
-                    lastDate: endDate.subtract(Duration(days: 1)),
+                    lastDate: DateTime.now(),
                   ).then((newDate) {
                     if (newDate != null) {
                       setState(() {
@@ -96,47 +77,70 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-
-              const SizedBox(height: 20),
-
-              //select end date button
+              const SizedBox(
+                height: 10,
+              ),
+              TextInput(
+                controller: stockCODE,
+                hintText: 'Input the code of stock',
+                obscureText: false,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               CustButton(
-                btnColor: Colors.red,
                 btnText: const Text(
-                  'Select End Date',
+                  'Get Graph',
                   style: TextStyle(fontSize: 18),
                 ),
+                btnColor: Colors.blue,
                 btnHeight: 45,
                 btnWidth: 200,
-                pressAction: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: endDate,
-                    firstDate: startDate.add(Duration(days: 1)),
-                    lastDate: DateTime(2023, 12, 31),
-                  ).then((newDate) {
-                    if (newDate != null) {
-                      setState(() {
-                        endDate = newDate;
-                      });
-                    }
+                pressAction: () async {
+                  final url = await getImage(stockCODE.text, startDate,
+                      startDate.add(const Duration(days: 3)), 200, 300);
+                  setState(() {
+                    imageUrl = url;
                   });
                 },
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              if (imageUrl != ' ') Image.network(imageUrl),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                child: TextField(
+                  controller: buyPrice,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Enter the Price",
+                      hintStyle: TextStyle(
+                        fontSize: 20,
+                      )),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const SizedBox(height: 20),
             ],
           ),
-          const SizedBox(height: 50),
           ElevatedButton(
             onPressed: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          OrderPage(startDate: startDate, endDate: endDate)));
+                      builder: (context) => OrderPage(
+                            startDate: startDate,
+                            buyPrice: int.parse(buyPrice.text),
+                          )));
             },
             style: ElevatedButton.styleFrom(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 30)),
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
             child: const Text(
               'Enter The Game',
               style: TextStyle(
