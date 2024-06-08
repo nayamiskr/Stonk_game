@@ -6,7 +6,9 @@ import '../components/textinput.dart';
 import '../features/gethttp.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key});
+  final int money;
+
+  const HomeScreen({super.key, required this.money});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime startDate = DateTime(2023, 1, 1);
   final buyPrice = TextEditingController();
+  final bSell = TextEditingController();
   final stockCODE = TextEditingController();
   String imageUrl = ' ';
 
@@ -31,14 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.wallet,
                     size: 50,
                   ),
-                  Text(': 1000000NTD', style: TextStyle(fontSize: 40))
+                  Text(': ${widget.money}NTD', style: TextStyle(fontSize: 40))
                 ],
               ),
               const SizedBox(
@@ -81,10 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 10,
               ),
               TextInput(
-                controller: stockCODE,
-                hintText: 'Input the code of stock',
-                obscureText: false,
-              ),
+                  controller: stockCODE,
+                  hintText: "Enter The Code",
+                  obscureText: false),
               const SizedBox(
                 height: 20,
               ),
@@ -97,8 +99,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 btnHeight: 45,
                 btnWidth: 200,
                 pressAction: () async {
-                  final url = await getImage(stockCODE.text, startDate,
-                      startDate.add(const Duration(days: 3)), 200, 300);
+                  final url = await getImage(
+                    stockCODE.text,
+                    startDate,
+                    startDate.add(const Duration(days: 3)),
+                  );
                   setState(() {
                     imageUrl = url;
                   });
@@ -111,19 +116,38 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 70),
-                child: TextField(
-                  controller: buyPrice,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Enter the Price",
-                      hintStyle: TextStyle(
-                        fontSize: 20,
-                      )),
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Flexible(
+                      child: FractionallySizedBox(
+                    widthFactor: 0.8,
+                    child: TextField(
+                      controller: buyPrice,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "Enter The Price",
+                          hintStyle: TextStyle(
+                            fontSize: 20,
+                          )),
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
+                  Flexible(
+                      child: FractionallySizedBox(
+                    widthFactor: 0.8,
+                    child: TextField(
+                      controller: bSell,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "Sell Number",
+                          hintStyle: TextStyle(
+                            fontSize: 20,
+                          )),
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
+                ],
               ),
               const SizedBox(height: 20),
             ],
@@ -136,6 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => OrderPage(
                             startDate: startDate,
                             buyPrice: int.parse(buyPrice.text),
+                            sBuy: int.parse(bSell.text),
                           )));
             },
             style: ElevatedButton.styleFrom(

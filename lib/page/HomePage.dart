@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pdfx/pdfx.dart';
+import 'package:stonk_app/components/button.dart';
 import 'package:stonk_app/page/HomeScreen.dart';
 import 'package:stonk_app/page/order.dart';
 
@@ -23,13 +25,12 @@ class HomePage extends StatelessWidget {
               children: [
                 // 自選
                 ListTile(
-                  title: const Text('自選'),
+                  title: const Text('查詢'),
                   onTap: () {
                     // 導航到自選頁面
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const SelfSelection()),
+                      MaterialPageRoute(builder: (context) => const Search()),
                     );
                   },
                 ),
@@ -44,6 +45,7 @@ class HomePage extends StatelessWidget {
                           builder: (context) => OrderPage(
                                 startDate: DateTime(0),
                                 buyPrice: 200,
+                                sBuy: 20,
                               )),
                     );
                   },
@@ -69,6 +71,7 @@ class HomePage extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => const Account(
                                 paragraphs: [],
+                                imgUrl: "",
                               )),
                     );
                   },
@@ -91,20 +94,47 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          body: const HomeScreen()),
+          body: const HomeScreen(
+            money: 1000000,
+          )),
     );
   }
 }
 
-class SelfSelection extends StatelessWidget {
-  const SelfSelection({super.key});
+class Search extends StatefulWidget {
+  const Search({super.key});
+
+  @override
+  State<Search> createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+  late PdfControllerPinch pdfControllerPinch;
+
+  void initState() {
+    super.initState();
+    pdfControllerPinch =
+        PdfControllerPinch(document: PdfDocument.openAsset('assets/Code.pdf'));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('自選'),
+        title: const Text('查詢'),
       ),
+      body: _pdfView(),
+    );
+  }
+
+  Widget _pdfView() {
+    return Column(
+      children: [
+        Expanded(
+            child: PdfViewPinch(
+          controller: pdfControllerPinch,
+        ))
+      ],
     );
   }
 }
@@ -137,7 +167,8 @@ class Entrust extends StatelessWidget {
 
 class Account extends StatelessWidget {
   final List<String> paragraphs;
-  const Account({super.key, required this.paragraphs});
+  final String imgUrl;
+  const Account({super.key, required this.paragraphs, required this.imgUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -150,24 +181,67 @@ class Account extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.network(imgUrl),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('賠率: ', style: TextStyle(fontSize: 32)),
+                const Text('投資報酬率: ', style: TextStyle(fontSize: 32)),
                 Text(
                   paragraphs[0],
                   style: TextStyle(
                     fontSize: 32,
                     color: paragraphs[0].startsWith('-')
-                        ? Colors.red
-                        : Colors.green,
+                        ? Colors.green
+                        : Colors.red,
                   ),
                 ),
               ],
             ),
             Text(
               '資金: ${paragraphs[1]}',
-              style: TextStyle(fontSize: 32),
+              style: const TextStyle(fontSize: 32),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustButton(
+                  btnText: const Text(
+                    'Continue',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  btnColor: Color.fromARGB(255, 1, 181, 7),
+                  btnHeight: 45,
+                  btnWidth: 200,
+                  pressAction: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomeScreen(
+                                  money: int.parse(paragraphs[1]),
+                                )));
+                  },
+                ),
+                CustButton(
+                  btnText: const Text(
+                    'Restart',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  btnColor: const Color.fromARGB(255, 243, 33, 33),
+                  btnHeight: 45,
+                  btnWidth: 200,
+                  pressAction: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen(
+                                  money: 1000000,
+                                )));
+                  },
+                ),
+              ],
             )
           ],
         ),

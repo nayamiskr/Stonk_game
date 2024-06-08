@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:stonk_app/components/button.dart';
-import 'package:stonk_app/components/textinput.dart';
 import 'package:stonk_app/features/gethttp.dart';
 import 'package:stonk_app/page/HomePage.dart';
 
 class OrderPage extends StatefulWidget {
   final DateTime startDate;
   final int buyPrice;
-
-  const OrderPage({super.key, required this.startDate, required this.buyPrice});
+  final int sBuy;
+  const OrderPage(
+      {super.key,
+      required this.startDate,
+      required this.buyPrice,
+      required this.sBuy});
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -17,7 +20,15 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   final stockCODE = TextEditingController();
   final sellPrice = TextEditingController();
-  DateTime endDate = DateTime(2023, 12, 1);
+  final sSell = TextEditingController();
+  late DateTime endDate;
+
+  @override
+  void initState() {
+    super.initState();
+    endDate = widget.startDate;
+  }
+
   String imageUrl = ' ';
   List<String> result = [];
 
@@ -42,9 +53,8 @@ class _OrderPageState extends State<OrderPage> {
       body: Center(
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('購買股票', style: TextStyle(fontSize: 30)),
+            const SizedBox(
+              height: 10,
             ),
             Center(
               child: Text(
@@ -55,74 +65,80 @@ class _OrderPageState extends State<OrderPage> {
             ),
             const SizedBox(height: 20),
             CustButton(
-              btnColor: Colors.red,
+              btnColor: Colors.blue,
               btnText: const Text(
-                'Select End Date',
+                '==>',
                 style: TextStyle(fontSize: 18),
               ),
               btnHeight: 45,
-              btnWidth: 200,
+              btnWidth: 100,
               pressAction: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: endDate,
-                  firstDate: widget.startDate,
-                  lastDate: DateTime(2023, 12, 31),
-                ).then((newDate) {
-                  if (newDate != null) {
-                    setState(() {
-                      endDate = newDate;
-                    });
-                  }
+                setState(() {
+                  endDate = endDate.add(const Duration(days: 1));
                 });
               },
             ),
-            const SizedBox(height: 40),
-            TextInput(
-              controller: stockCODE,
-              hintText: 'Input the code of stock',
-              obscureText: false,
-            ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 70),
+            Flexible(
+                child: FractionallySizedBox(
+              widthFactor: 0.8,
               child: TextField(
-                controller: sellPrice,
+                controller: stockCODE,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "Enter the Price",
+                    hintText: "Enter The Code",
                     hintStyle: TextStyle(
                       fontSize: 20,
                     )),
                 textAlign: TextAlign.center,
               ),
+            )),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Flexible(
+                    child: FractionallySizedBox(
+                  widthFactor: 0.8,
+                  child: TextField(
+                    controller: sellPrice,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Enter The Price",
+                        hintStyle: TextStyle(
+                          fontSize: 20,
+                        )),
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+                Flexible(
+                    child: FractionallySizedBox(
+                  widthFactor: 0.8,
+                  child: TextField(
+                    controller: sSell,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Sell Number",
+                        hintStyle: TextStyle(
+                          fontSize: 20,
+                        )),
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+              ],
             ),
             const SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
-                try {
-                  final url = await getImage(
-                    stockCODE.text,
-                    widget.startDate,
-                    endDate,
-                    widget.buyPrice,
-                    int.parse(sellPrice.text),
-                  );
-                  print('Image URL: $url');
-                  await fetchParagraphs(
-                      'https://stonkgraph-api.an.r.appspot.com/stonk_api/${stockCODE.text}?start=${widget.startDate.year}-${widget.startDate.month}-${widget.startDate.day}&end=${endDate.year}-${endDate.month}-${endDate.day}&Buy=${widget.buyPrice}&Sell=${int.parse(sellPrice.text)}');
-                  setState(() {
-                    imageUrl = url;
-                  });
-                } catch (e) {
-                  // Handle exceptions
-                  print('Error: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('發生錯誤: $e'),
-                    ),
-                  );
-                }
+                final url = await getImage(
+                  stockCODE.text,
+                  widget.startDate,
+                  endDate,
+                );
+                print('Image URL: $url');
+                setState(() {
+                  imageUrl = url;
+                });
               },
               child: Container(
                 padding: const EdgeInsets.all(20),
@@ -152,12 +168,18 @@ class _OrderPageState extends State<OrderPage> {
               ),
               btnHeight: 40,
               btnWidth: 150,
-              pressAction: () {
+              pressAction: () async {
+                await fetchParagraphs(
+                    'https://stonkgraph-api.an.r.appspot.com/stonk_api/${stockCODE.text}?start=${widget.startDate.year}-${widget.startDate.month}-${widget.startDate.day}&end=${endDate.year}-${endDate.month}-${endDate.day}&Buy=${widget.buyPrice}&Sell=${int.parse(sellPrice.text)}&SBuy=${widget.sBuy}&SSell=${int.parse(sSell.text)}');
+
                 if (result.isNotEmpty) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Account(paragraphs: result),
+                      builder: (context) => Account(
+                        paragraphs: result,
+                        imgUrl: imageUrl,
+                      ),
                     ),
                   );
                 } else {

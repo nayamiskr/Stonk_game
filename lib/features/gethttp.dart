@@ -1,10 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
 
-Future<String> getImage(
-    String stonkCode, DateTime start, DateTime end, int buy, int sell) async {
+Future<String> getImage(String stonkCode, DateTime start, DateTime end) async {
   var myUri = Uri.parse(
-      'https://stonkgraph-api.an.r.appspot.com/stonk_api/${stonkCode}?start=${start.year}-${start.month}-${start.day}&end=${end.year}-${end.month}-${end.day}&Buy=${buy}&Sell=${sell}');
+      'https://stonkgraph-api.an.r.appspot.com/stonk_api/${stonkCode}?start=${start.year}-${start.month}-${start.day}&end=${end.year}-${end.month}-${end.day}');
   final response = await http.get(myUri);
   if (response.statusCode == 200) {
     var document = html_parser.parse(response.body);
